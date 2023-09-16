@@ -2,7 +2,8 @@ from django.shortcuts import render
 
 from  rest_framework.views import APIView
 from rest_framework.response import Response
-
+from rest_framework import status
+from .serializers import HelloSerializer
 # Create your views here.
 
 class HelloApi(APIView):
@@ -17,5 +18,17 @@ class HelloApi(APIView):
             'Is mapped manually to URLs',
         ]
         return Response({'message':'hello','apiView':an_apiview})
+
+    def post(self,request):
+        """Create a hello message with our name"""
+        serialiser=HelloSerializer(data=request.data)
+        if serialiser.is_valid():
+            name=serialiser.validated_data.get('name')
+            message=f'Hello {name}'
+            return Response({'message':message})
+        else:
+            return Response(serialiser.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+
 
 
